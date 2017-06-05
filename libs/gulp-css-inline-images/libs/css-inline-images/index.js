@@ -30,6 +30,7 @@ function getUrlsToInline (content) {
         if (url.substr(-4, 4) != '.css' && url.indexOf("://") == -1) {
             if (url.substr(-4,4) === ".png" ||
                 url.substr(-4,4) === ".gif" ||
+                url.substr(-4,4) === ".svg" ||
                 url.substr(-4,4) === ".jpg") {
                 //url.substr(-5,5) === ".woff" ||
                 //url.substr(-6,6) === ".woff2") {

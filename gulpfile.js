@@ -1,57 +1,61 @@
-var gulp = require('gulp');
+const gulp = require('gulp');
 
-var inlineCssImages = require('./libs/gulp-css-inline-images/index.js'); // modifiche qui, (1) devo passare il file intero e non il suo contenuto
-var inlineCssFonts = require('gulp-inline-assets');
-var importCss = require("gulp-cssimport");
-var inline = require("gulp-inline");
-var clean = require('gulp-clean');
-var runSequence = require('run-sequence');
+const inlineCssImages = require('./libs/gulp-css-inline-images/index.js'); // modifiche qui, (1) devo passare il file intero e non il suo contenuto
+const inlineCssFonts = require('gulp-inline-assets');
+const importCss = require("gulp-cssimport");
+const inline = require("gulp-inline");
+const clean = require('gulp-clean');
+const runSequence = require('run-sequence');
+const argv = require('yargs').argv;
 
+const basePath = './../';
 
-gulp.task('copy', function () {
-    return gulp.src('./web/**')
-        .pipe(gulp.dest('./web2'));
+console.log(argv.src);
+
+gulp.task('copy', () => {
+    return gulp.src(basePath + argv.src + '/**')
+      .pipe(gulp.dest('./tmp'));
 });
 
 // inlines all images in css files
-gulp.task("inlineImages", function() {
-	return gulp.src("./web2/**/*.css")
+gulp.task("inlineImages", () => {
+	return gulp.src("./tmp/**/*.css")
 		.pipe(inlineCssImages()) // tutte le immagini dei css in base 64
-		.pipe(gulp.dest("./web2"))
+		.pipe(gulp.dest("./tmp"))
 });
 
 // inlines all the fonts in css files
-gulp.task("inlineFonts", function() {
-	return gulp.src("./web2/**/*.css")
-	    .pipe(inlineCssFonts()) // font in base 64
-		.pipe(gulp.dest("./web2"))
+gulp.task("inlineFonts", () => {
+	return gulp.src("./tmp/**/*.css")
+		.pipe(inlineCssFonts()) // font in base 64
+		.pipe(gulp.dest("./tmp"))
 });
 
 
-gulp.task("importCss", function() {
-	return gulp.src("./web2/**/*.css")
+gulp.task("importCss", () => {
+	return gulp.src("./tmp/**/*.css")
 		.pipe(importCss()) // css imports
-		.pipe(gulp.dest("./web2"))
+		.pipe(gulp.dest("./tmp"))
 });
 
 
-gulp.task("inlineHtml", function() {
-	return gulp.src('./web2/**/*.html')
+gulp.task("inlineHtml", () => {
+	return gulp.src('./tmp/**/*.html')
 		  .pipe(inline({
 		    base: '',
 		    disabledTypes: ['svg'], // Only inline css files 
 		  }))
-		  .pipe(gulp.dest('./'));
+		  .pipe(gulp.dest(basePath + argv.dst));
 });
 
 
-gulp.task('clean', function () {
-    return gulp.src(['./web2'], {read: false})
+gulp.task('clean', () => {
+    return gulp.src(['./tmp'], {read: false})
         .pipe(clean());
 });
 
 
-gulp.task('build', function(callback) {
+gulp.task('build', (callback) => {
   runSequence('copy',
               'inlineImages',
               'inlineFonts',
